@@ -22,14 +22,12 @@ const char* morseCodes[] = {
 
 const char letters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-
 // ========================================
 // Variables
 // ========================================
 
 String currentMorse = "";
 String message = "";
-
 
 // ========================================
 // Decode Morse
@@ -47,7 +45,6 @@ char decodeMorse(String code) {
   return '?';
 }
 
-
 // ========================================
 // Active Buzzer
 // LOW = ON
@@ -63,7 +60,6 @@ void beep(int duration) {
   digitalWrite(ACTIVE_BUZZER, HIGH);
 }
 
-
 // ========================================
 // TFT
 // ========================================
@@ -72,18 +68,17 @@ void drawScreen() {
 
   tft.fillScreen(TFT_BLACK);
 
-  // عنوان
+  // Title
   tft.setTextColor(TFT_CYAN, TFT_BLACK);
   tft.setTextSize(2);
   tft.setCursor(5, 5);
   tft.println("MORSE");
 
-  // خط جداکننده
+  // Separator line
   tft.drawLine(0, 28, 128, 28, TFT_WHITE);
 
-
   // ====================================
-  // Morse فعلی
+  // Current Morse
   // ====================================
 
   tft.setTextColor(TFT_YELLOW, TFT_BLACK);
@@ -99,7 +94,6 @@ void drawScreen() {
     tft.println("_");
   }
 
-
   // ====================================
   // Message
   // ====================================
@@ -113,8 +107,7 @@ void drawScreen() {
   tft.setTextSize(2);
   tft.setCursor(5, 85);
 
-
-  // فقط آخرین قسمت پیام روی صفحه
+  // Show only the last part of the message
   String shownMessage = message;
 
   if (shownMessage.length() > 10) {
@@ -125,7 +118,6 @@ void drawScreen() {
 
   tft.println(shownMessage);
 }
-
 
 // ========================================
 // SETUP
@@ -143,17 +135,15 @@ void setup() {
   // HIGH = OFF
   digitalWrite(ACTIVE_BUZZER, HIGH);
 
-
   // --------------------------
   // Serial Monitor
   // --------------------------
 
   Serial.begin(115200);
 
-
   // --------------------------
   // UART
-  // Pico TX → ESP32 GPIO16
+  // Pico TX -> ESP32 GPIO16
   // --------------------------
 
   MorseSerial.begin(
@@ -163,7 +153,6 @@ void setup() {
     TX_PIN
   );
 
-
   // --------------------------
   // TFT
   // --------------------------
@@ -172,10 +161,8 @@ void setup() {
 
   tft.setRotation(0);
 
-
-  // صفحه اولیه
+  // Initial screen
   drawScreen();
-
 
   Serial.println();
   Serial.println("======================");
@@ -183,7 +170,6 @@ void setup() {
   Serial.println("======================");
   Serial.println("Ready!");
 }
-
 
 // ========================================
 // LOOP
@@ -194,7 +180,6 @@ void loop() {
   while (MorseSerial.available()) {
 
     char c = MorseSerial.read();
-
 
     // ==================================
     // DOT
@@ -211,7 +196,6 @@ void loop() {
       drawScreen();
     }
 
-
     // ==================================
     // DASH
     // ==================================
@@ -227,10 +211,9 @@ void loop() {
       drawScreen();
     }
 
-
     // ==================================
     // ENTER
-    // پایان حرف
+    // Finish letter
     // ==================================
 
     else if (c == '\n') {
@@ -249,25 +232,24 @@ void loop() {
 
         currentMorse = "";
 
-        // بوق پایان حرف
+        // Letter-end beep
         beep(200);
 
         drawScreen();
       }
     }
 
-
     // ==================================
     // SPACE
-    // فاصله بین کلمات
+    // Word separator
     // ==================================
 
     else if (c == ' ') {
 
       Serial.println("SPACE");
 
-      // اگر چیزی هنوز در Morse باشد
-      // اول آن را تبدیل کنیم
+      // If Morse is still pending,
+      // decode it first.
 
       if (currentMorse.length() > 0) {
 
@@ -279,12 +261,10 @@ void loop() {
         currentMorse = "";
       }
 
-
-      // فاصله
+      // Add a space
       message += ' ';
 
-
-      // بوق کوتاه
+      // Short beep
       beep(80);
 
       drawScreen();
