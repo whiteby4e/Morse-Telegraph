@@ -5,7 +5,7 @@
   UART:
     Pico GP0 (TX) -> ESP32 GPIO16 (RX)
     GND -> GND
-    Baud: 9600
+   
 */
 
 #define DOT_BUTTON 14
